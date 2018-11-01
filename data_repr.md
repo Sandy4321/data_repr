@@ -11,3 +11,8 @@ concrete class that evaluate the representativeness of a sample of a categorical
 * AssessVarQuant:
 concrete class that evaluate the representativeness of a sample of a continuous variable versus its original data.
     - evaluate(): return the probability that the sample belong to the original distribution.
+    
+* AssessCombVar:
+concrete class that evaluate the representativeness of a multivariate sample versus its original data.
+    - evaluate(): return the combined pvalue.
+    
