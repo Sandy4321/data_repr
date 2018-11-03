@@ -134,7 +134,7 @@ class AssessCombVar(AssessSample):
             weights[data.columns.get_loc(target_col)] = 10
         return weights
 
-    def evaluate(self):
+    def evaluate(self, weighted=False):
         """
         Use the stouffer method to combine pvalues
         :return: pval
@@ -142,4 +142,8 @@ class AssessCombVar(AssessSample):
         sample = iris.sample(frac=0.3, random_state=123)
         AssessCombVar(sample, iris, target_col='iris_class').evaluate() = 0.5712377451855659
         """
-        return combine_pvalues(self.pvals, method='stouffer', weights=self.weights)[1]
+        if weighted:
+            p = combine_pvalues(self.pvals, method='stouffer', weights=self.weights)[1]
+        else:
+            p = combine_pvalues(self.pvals)[1]
+        return p

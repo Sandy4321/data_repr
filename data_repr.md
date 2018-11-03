@@ -16,3 +16,15 @@ concrete class that evaluate the representativeness of a sample of a continuous 
 concrete class that evaluate the representativeness of a multivariate sample versus its original data.
     - evaluate(): return the combined pvalue.
     
+# Sampling
+
+* Sampling: 
+abstract base class for the stratified sampling of a variable
+    - Split(): get  sample and remaining indexes
+    
+* SampleVarCat:
+concrete class to split a sample accordingly to the proportions of the categorical variable
+    - split()
+    
+* SampleVarQuant:
+concrete class to split a sample accordingly to the proportions of the binned variable 
