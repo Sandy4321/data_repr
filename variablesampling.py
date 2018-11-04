@@ -44,7 +44,7 @@ class SampleVarQuant(SampleVarCat):
 
     def sample(self):
         a = list(self.data)
-        edges = np.linspace(0, max(a) + min(a), num=self.bins)
+        edges = np.linspace(min(a) - abs(min(a)), max(a) + abs(min(a)), num=self.bins)
         dict_edges = {}
         dict_count = {}
         for i, (s, e) in enumerate(zip(edges[:-1], edges[1:])):
@@ -52,7 +52,9 @@ class SampleVarQuant(SampleVarCat):
             dict_count[i] = sum((s < a) & (a <= e)) / len(a)
         samples = []
         for i, freq in dict_count.items():
+            # number of samples in this bin
             n = int(round(self.n_samples * freq))
+            # boundaries of this bin
             s, e = dict_edges[i]
             vals = [a.index(x) for x in a if ((x > s) and (x <= e))]
             n_val = random.choices(vals, k=n)
