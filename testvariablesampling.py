@@ -1,5 +1,5 @@
 import  unittest
-from variablesampling import SampleVarCat
+from variablesampling import SampleVarCat, SampleVarQuant
 import numpy as np
 import pandas as pd
 
@@ -29,7 +29,19 @@ class TestSampleVarCat(unittest.TestCase):
     def test_sample(self):
         idx = self.svc.sample()
         self.assertListEqual(sorted([self.l[x] for x in idx]), sorted([2, 3, 1, 1, 2, 2, 3, 1, 1, 2]))
+    def test_split(self):
+        s, t = self.svc.split()
+        self.assertListEqual(sorted(s), sorted([2, 3, 1, 1, 2, 2, 3, 1, 1, 2]))
+        self.assertListEqual(sorted(t), sorted([2, 3, 1, 1, 2, 2, 3, 1, 1, 2]))
 
+class TestSampleVarQUant(unittest.TestCase):
+    def setUp(self):
+        self.l = [0.1, 0.1, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4]
+        self.svq = SampleVarQuant(self.l, 4)
+
+    def test_sample(self):
+        idx = self.svq.sample()
+        self.assertListEqual(sorted([self.l[x] for x in idx]), sorted([0.1, 0.2, 0.3, 0.4]))
 
 if __name__ == '__main__':
     unittest.main()
