@@ -36,28 +36,29 @@ class SampleVarCat(Sampling):
 class SampleVarQuant(SampleVarCat):
     def __init__(self, data, n_samples, bins=10):
         self.data = data
+        self.bins = bins
         self.n_samples = n_samples
         self.freq_bin, self.bin_edges = np.histogram(data, bins=bins, density=True)
         self.df = pd.DataFrame({'quantvar': data})
 
-    def sample(self):
-        """get most probable indices samples according to the column values distribution"""
-        counts_bin = np.round(self.freq_bin / np.sum(self.freq_bin) * self.n_samples)
-        bin_edges_windows = np.array([self.bin_edges[0:len(self.bin_edges) - 1], self.bin_edges[1:len(self.bin_edges)]])
-        steps = np.repeat(np.arange(len(counts_bin))[counts_bin > 0.], counts_bin[counts_bin > 0.].astype(int))
-        print(steps)
-        indexes = []
-        for c,i in enumerate(steps):
-            idx = self.df.quantvar.index.where((self.df.quantvar > bin_edges_windows[0, i]) &
-                                      (self.df.quantvar <= bin_edges_windows[1, i])).tolist()
-            idx = [int(x) for x in idx if not np.isnan(x)]
-            print(idx)
-            print(counts_bin[c])
-            if idx and counts_bin[c]:
-                indexes.append(np.random.choice(idx, size=int(counts_bin[c]), replace=False).astype(int).tolist())
 
-        print(indexes)
-        return indexes
+    def sample(self):
+        a = list(self.data)
+        edges = np.linspace(0, max(a) + min(a), num=self.bins)
+        dict_edges = {}
+        dict_count = {}
+        for i, (s, e) in enumerate(zip(edges[:-1], edges[1:])):
+            dict_edges[i] = (s, e)
+            dict_count[i] = sum((s < a) & (a <= e)) / len(a)
+        samples = []
+        for i, freq in dict_count.items():
+            n = int(round(self.n_samples * freq))
+            s, e = dict_edges[i]
+            vals = [a.index(x) for x in a if ((x > s) and (x <= e))]
+            n_val = random.choices(vals, k=n)
+            samples.append(n_val)
+        samples = [x for sublist in samples for x in sublist]
+        return samples
 
     def split(self):
         super().split()
