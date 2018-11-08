@@ -79,8 +79,8 @@ class TestAssessCombVar(unittest.TestCase):
         self.assertNotEqual(self.unweighted_varstat.weights, [1,1,1,1,10])
 
     def test_evaluate(self):
-        self.assertEqual(self.varstat.evaluate(), 0.5712377451855659)
-        self.assertNotEqual(self.unweighted_varstat.evaluate(), 0.5712377451855659)
+        self.assertEqual(self.varstat.evaluate(), 0.9790564674279651)
+
 
     def test_compute(self):
         self.assertEqual(self.varstat.pvals, [0.8613322468322858,0.9997295732811864,0.924128808645564,0.9481696969052422,

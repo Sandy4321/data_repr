@@ -1,4 +1,4 @@
-import  unittest
+import unittest
 from variablesampling import SampleVarCat, SampleVarQuant
 import numpy as np
 import pandas as pd
