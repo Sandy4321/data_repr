@@ -1,7 +1,8 @@
 import unittest
 import pandas as pd
-
 from probingvariables import Model
+
+
 class TestModel(unittest.TestCase):
     def setUp(self):
         self.expected_df = pd.DataFrame({
@@ -36,8 +37,12 @@ class TestModel(unittest.TestCase):
         self.assertEqual(test.target.mean(), 0.5)
 
     def test_train(self):
+        df = pd.read_csv('../data/test/test_features.csv')
+
         model_load = Model(['test'], folder='../data/test/')
-        model_load.train()
+        train, test = model_load.split(df)
+        acc = model_load.train(train, test)
+        self.assertEqual(acc, 1.0)
 
 if __name__ == '__main__':
     unittest.main()

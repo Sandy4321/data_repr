@@ -20,7 +20,7 @@ class Model():
 
         # self.train, self.test = self.split(self.df)
 
-    def parse_df(self, filenames):
+    def parse_df(self, filenames, verbose=False):
         """
         Load data and targets and store computed metrics into a dataframe
         :param filenames: list of string
@@ -33,7 +33,8 @@ class Model():
                 df = self.data_features(data.values, target.values.T)
             else:
                 df = pd.concat([df, self.data_features(data.values, target.values.T)])
-            print("Parsing %s: %d rows" % (filename, len(df)))
+            if verbose:
+                print("Parsing %s: %d rows" % (filename, len(df)))
         return df
 
     def data_features(self, a, target):
@@ -74,24 +75,23 @@ class Model():
         """
         n_samples = round(len(df)*0.2)
         df.index = df.index.reindex(list(range(len(df))))[0]
+        # get a list of possible samplings
+        idx_list = [df.sample(n_samples).index for _ in range(10)]
+        # iterate until a solution is found
+        for idx in idx_list:
+            test_cond = df.index.isin(idx)
+            test = df[test_cond].copy()
+            train = df[~test_cond].copy()
+            if (round(test.target.mean(),1) == round(train.target.mean(),1)):
+                return train, test
 
-        idx = df.sample(n_samples).index
-        test_cond = df.index.isin(idx)
-        test = df[test_cond].copy()
-        train = df[~test_cond].copy()
-
-        if (test.target.mean() == train.target.mean()):
-            return train, test
-
-    def train(self):
+    def train(self, train, test):
         """
         Train a logistic regression model and save it.
         :return: test accuracy
         """
-        train, test = self.split(self.df)
-        if train:
-            lr = LogisticRegression()
-            lr.fit(train.iloc[:, train.columns != 'target'].values, train.target.values)
-            acc = accuracy_score(test.target, lr.predict(test.iloc[:, test.columns != 'target'].values))
-            print("Test accuracy = %.2f" % acc)
-            joblib.dump(lr, 'models/probvar.joblib')
+        self.lr = LogisticRegression()
+        self.lr.fit(train.iloc[:, train.columns != 'target'].values, train.target.values)
+        acc = accuracy_score(test.target, self.lr.predict(test.iloc[:, test.columns != 'target'].values))
+        # print("Test accuracy = %.2f" % acc)
+        return acc
